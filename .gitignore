@@ -1,0 +1,21 @@
+# Maven
+target/
+.mvn/
+*.class
+
+# IDEs (VS Code y IntelliJ)
+.vscode/
+.idea/
+*.iml
+*.iws
+*.iml_to_delete
+
+# Logs y reportes generados por las pruebas de Karate
+logs/
+target/karate-reports/
+build/
+report/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
