@@ -2,52 +2,33 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3_9_9' // Nombre del Maven configurado en Jenkins
-        jdk 'JDK_21'   // Nombre del JDK configurado en Jenkins
+        // Jenkins descargará Maven automáticamente y usará el Java 21 que ya tiene el contenedor
+        maven 'Maven 3'
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                echo 'Clonando el repositorio...'
-                git branch: 'main', url: 'https://github.com/Nov-222/Karate_Jenkins'
+                checkout scm
             }
         }
 
-        stage('Build & Test') {
+        stage('Compilar Proyecto') {
             steps {
-                echo 'Ejecutando pruebas Karate...'
-                bat 'mvn test -Dkarate.options="--tags @Logica_Principal"'
-                echo 'Finalizando Ejecucion de Pruebas'
+                sh 'mvn test-compile'
             }
         }
 
-        stage('Publicar Reporte') {
+        stage('Ejecutar Pruebas de Gatling') {
             steps {
-                echo 'Publicando reporte HTML de Karate...'
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'target/karate-reports',
-                    reportFiles: 'karate-summary.html',
-                    reportName: 'Reporte de Pruebas Karate'
-                ])
+                sh 'mvn test -Dgatling.simulationClass=performance.GatlingSimulation'
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline finalizado — limpiando workspace.'
-            cleanWs()
-        }
-        success {
-            echo 'Pruebas Karate ejecutadas con éxito.'
-        }
-        failure {
-            echo 'Falló alguna etapa del pipeline.'
+            archiveArtifacts artifacts: 'target/gatling/**/*', allowEmptyArchive: true
         }
     }
 }

@@ -26,6 +26,12 @@
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.karatelabs</groupId>
+            <artifactId>karate-gatling</artifactId>
+            <version>${karate.version}</version>
+            <scope>test</scope>
         </dependency>	
     </dependencies>
 
@@ -56,7 +62,47 @@
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
                 </configuration>
-            </plugin>          
+            </plugin>    
+            <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>4.5.6</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                            <configuration>
+                                <args>
+                                    <arg>-Jbackend:GenBCode</arg>
+                                    <arg>-Jdelambdafy:method</arg>
+                                    <arg>-target:jvm-1.8</arg>
+                                    <arg>-deprecation</arg>
+                                    <arg>-feature</arg>
+                                    <arg>-unchecked</arg>
+                                    <arg>-language:implicitConversions</arg>
+                                    <arg>-language:postfixOps</arg>
+                                </args>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>
+            <plugin>
+                    <groupId>io.gatling</groupId>
+                    <artifactId>gatling-maven-plugin</artifactId>
+                    <version>4.20.8</version>
+                    <configuration>
+                        <simulationsFolder>src/test/scala</simulationsFolder>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>                                       
+            </plugin>       
         </plugins>        
     </build>       
     
