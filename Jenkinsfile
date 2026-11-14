@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     tools {
-        // Apunta al nombre exacto del JDK registrado en el panel de Jenkins (Tools)
         jdk 'JDK_21'
-        // Mantiene la configuración automática de Maven
         maven 'Maven 3'
     }
 
@@ -17,22 +15,22 @@ pipeline {
 
         stage('Compilar Proyecto') {
             steps {
-                // Compila las clases de prueba (incluyendo Scala y Gatling)
-                sh 'mvn test-compile'
+                // Usamos 'bat' en lugar de 'sh' para Windows
+                bat 'mvn test-compile'
             }
         }
 
         stage('Ejecutar Pruebas de Gatling') {
             steps {
-                // Ejecuta la simulación de Gatling configurada en tu proyecto Karate
-                sh 'mvn test -Dgatling.simulationClass=performance.GatlingSimulation'
+                // Comando exacto para correr Gatling en tu proyecto
+                bat 'mvn gatling:test -Dgatling.simulationClass=performance.GatlingSimulationOther'
             }
         }
     }
 
     post {
         always {
-            // Archiva los reportes HTML generados por Gatling para poder descargarlos desde Jenkins
+            // Archiva los reportes HTML generados por Gatling
             archiveArtifacts artifacts: 'target/gatling/**/*', allowEmptyArchive: true
         }
         success {
